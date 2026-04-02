@@ -59,27 +59,6 @@ def get_all_by_single_user(db: Session = Depends(get_db), get_current_user: sche
     return posts
 
 #read single
-# @router.get("/{id}", response_model=schemas.VotedResponse)
-# def get_single_post(id :int,
-#                     db: Session = Depends(get_db),
-#                     get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
-    
-#     # single = db.query(models.Post).filter(models.Post.id == id).first()
-#     single = db.query(
-#         models.Post,func.count(models.Votes.post_id).label("votes")).join(
-#             models.Votes, models.Votes.post_id == models.Post.id, isouter=True).filter(
-#                 models.Post.id == id).group_by(models.Post.id).first()
-    
-#     if not single:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-#                             detail="Post with this id not found")
-    
-#     if (single.published is False and single.user_id != get_current_user.id): # type: ignore
-#         raise HTTPException( status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Post Might not Exist or is being unpublished by owner"
-#         )
-    
-#     return single
 @router.get("/{id}", response_model=schemas.VotedResponse)
 def get_single_post(
     id:int,
