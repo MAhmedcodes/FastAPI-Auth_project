@@ -7,7 +7,7 @@ from typing import List, Optional
 from colorama import Fore
 
 from app import models
-from app.oauth2 import oauth2
+from app.core.oauth2 import oauth2
 from app import models
 from app import schemas
 from ..database.database import get_db
