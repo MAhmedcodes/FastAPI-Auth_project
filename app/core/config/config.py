@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -20,6 +21,11 @@ class Settings(BaseSettings):
     REDIS_RESULT_BACKEND: str = "redis://localhost:6379/1"
     REDIS_HOST: str = "localhost"
     REDIS_PORT: str = "6379"
+
+    FLOWER_PORT: int = 5555
+    FLOWER_HOST: str = "0.0.0.0"
+    FLOWER_BASIC_AUTH: Optional[str] = "admin:admin"  # username:password
+    FLOWER_URL_PREFIX: str = "/flower"  # Optional: if behind proxy
 
     #Email / SMTP
     EMAIL_HOST: str = "smtp.gmail.com"
