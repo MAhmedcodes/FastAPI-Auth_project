@@ -1,0 +1,46 @@
+groups:
+  - name: celery_alerts
+    interval: 30s
+    rules:
+      # Alert when no tasks have been processed in 5 minutes
+      - alert: CeleryQueueEmpty
+        expr: celery_queue_size == 0 and (time() - celery_tasks_total) > 300
+        for: 5m
+        labels:
+          severity: info
+          team: backend
+        annotations:
+          summary: "Celery queue is empty"
+          description: "No tasks have been processed in the last 5 minutes"
+          action: "trigger_email_task"
+      
+      # Alert on high task failure rate
+      - alert: HighTaskFailureRate
+        expr: rate(celery_tasks_total{status="FAILURE"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "High task failure rate"
+          description: "Task failure rate is above 10%"
+      
+      # Alert when tasks are pending for too long
+      - alert: TasksPendingTooLong
+        expr: celery_tasks_active > 5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tasks pending for too long"
+          description: "More than 5 tasks have been active for over 10 minutes"
+      
+      # Alert on worker downtime
+      - alert: WorkerDown
+        expr: celery_workers_available < 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No Celery workers available"
+          description: "All Celery workers are down"
