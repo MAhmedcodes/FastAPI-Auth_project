@@ -1,28 +1,35 @@
-# app/tasks/celery_app.py
+# app/tasks/celery_app.py - ONE FILE TO RULE THEM ALL
 from celery import Celery
+from celery.schedules import crontab
 from app.core.config.config import settings
-from app.tasks.celery_beat_shedule import CELERYBEAT_SCHEDULE
 
-def create_celery_app() -> Celery:
-    celery = Celery(
-        "Congrats Email Sender", 
-        broker=settings.REDIS_BROKER_URL, 
-        backend=settings.REDIS_RESULT_BACKEND
-    )
-    
-    celery.conf.include = ["app.tasks.email_task"]
-    celery.conf.update({'timezone': 'UTC'})
-    celery.conf.enable_utc = True
-    
-    # Enable events for Flower monitoring
-    celery.conf.update(
-        worker_send_task_events=True,  # Required for Flower
-        task_send_sent_event=True,
-        task_track_started=True,
-    )
+# Create Celery app
+celery_app = Celery(
+    "tasks",
+    broker=settings.REDIS_BROKER_URL,
+    backend=settings.REDIS_RESULT_BACKEND,
+)
 
-    celery.conf.beat_schedule = CELERYBEAT_SCHEDULE
-    
-    return celery
+# Celery configuration
+celery_app.conf.update(
+    task_serializer='json',
+    accept_content=['json'],
+    result_serializer='json',
+    timezone='UTC',
+    enable_utc=True,
+    task_track_started=True,
+    task_time_limit=30 * 60,
+    task_soft_time_limit=25 * 60,
+)
 
-celery_app = create_celery_app()
+# ✅ BEAT SCHEDULE - Right here in the same file
+celery_app.conf.beat_schedule = {
+    "send-congrats-emails-monthly": {
+        "task": "send_congrats_emails",
+        "schedule": crontab(day_of_month=1, hour=9, minute=0),  # 1st of month at 9 AM
+        # "schedule": crontab(minute="*"),  # Uncomment for testing (every minute)
+    },
+}
+
+# Auto-discover tasks
+celery_app.autodiscover_tasks(['app.tasks'])

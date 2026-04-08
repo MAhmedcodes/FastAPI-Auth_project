@@ -22,11 +22,6 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: str = "6379"
 
-    FLOWER_PORT: int = 5555
-    FLOWER_HOST: str = "0.0.0.0"
-    FLOWER_BASIC_AUTH: Optional[str] = "admin:admin"  # username:password
-    FLOWER_URL_PREFIX: str = "/flower"  # Optional: if behind proxy
-
     #Email / SMTP
     EMAIL_HOST: str = "smtp.gmail.com"
     EMAIL_PORT: int = 465

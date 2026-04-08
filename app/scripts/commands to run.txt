@@ -4,29 +4,15 @@ cd D:\work\codes\BurntBrains\FastAPI Auth Project
 # Activate virtual environment
 myenv\Scripts\activate
 
-# Start Flower dashboard
-celery -A app.tasks.celery_app.celery_app flower --port=5555
-
-cd D:\work\codes\BurntBrains\FastAPI Auth Project
-myenv\Scripts\activate
-celery -A app.tasks.celery_app.celery_app worker --loglevel=info --pool=solo
-
-cd D:\work\codes\BurntBrains\FastAPI Auth Project
-myenv\Scripts\activate
-celery -A app.tasks.celery_app.celery_app beat --loglevel=info
-
-cd D:\work\codes\BurntBrains\FastAPI Auth Project
-myenv\Scripts\activate
-uvicorn app.main:app --reload
-
 redis-cli
 ping 
 
+celery -A app.tasks.celery_app worker --loglevel=info --pool=solo
 
-# Run the Celery Prometheus exporter
-celery-exporter --broker-url=redis://localhost:6379/0
-cd C:\Users\ahmed\Downloads\Compressed\prometheus-3.11.0.windows-amd64\prometheus-3.11.0.windows-amd64
-.\prometheus.exe --config.file="D:\work\codes\BurntBrains\FastAPI Auth Project\prometheus.yml"  
+celery -A app.tasks.celery_app beat --loglevel=info
+
+uvicorn app.main:app --reload
+  
 curl.exe -X POST http://localhost:8000/prometheus/trigger/send_congrats_to_top_posters
 
 http://localhost:8000/auth/google/login
