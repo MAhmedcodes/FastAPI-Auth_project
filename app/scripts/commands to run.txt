@@ -28,3 +28,6 @@ celery-exporter --broker-url=redis://localhost:6379/0
 cd C:\Users\ahmed\Downloads\Compressed\prometheus-3.11.0.windows-amd64\prometheus-3.11.0.windows-amd64
 .\prometheus.exe --config.file="D:\work\codes\BurntBrains\FastAPI Auth Project\prometheus.yml"  
 curl.exe -X POST http://localhost:8000/prometheus/trigger/send_congrats_to_top_posters
+
+http://localhost:8000/auth/google/login
+http://localhost:8000/auth/github/login

@@ -33,6 +33,17 @@ class Settings(BaseSettings):
     EMAIL_USER: str = ""
     EMAIL_PASS: str = ""
 
+    #google oauth
+    google_client_id: str
+    google_client_secret: str
+    google_redirect_uri: str = "http://localhost:8000/auth/google/callback"
+    
+    # GitHub OAuth
+    github_client_id: str
+    github_client_secret: str
+    github_redirect_uri: str = "http://localhost:8000/auth/github/callback"
+
+    SESSION_SECRET_KEY: str
     class Config:
         env_file = ".env"
         # extra = "ignore"   # don't crash on unknown .env keys

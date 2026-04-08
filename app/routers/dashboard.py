@@ -19,3 +19,4 @@ async def get_dashboard():
             content="<h1>Dashboard not found. Please create dashboard.html</h1>", 
             status_code=404
         )
+    

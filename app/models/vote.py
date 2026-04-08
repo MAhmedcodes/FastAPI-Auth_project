@@ -6,3 +6,4 @@ class Votes(Base):
 
     voter_id = Column(INTEGER, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     post_id = Column(INTEGER, ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
+    
