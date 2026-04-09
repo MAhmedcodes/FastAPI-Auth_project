@@ -36,3 +36,4 @@ def votes(vote: schemas.Votes, db: Session = Depends(database.get_db), get_curre
         vote_query.delete()
         db.commit()
         return {"message": "Vote removed successfully"}
+    

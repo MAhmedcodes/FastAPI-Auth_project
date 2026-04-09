@@ -22,17 +22,23 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: str = "6379"
 
-    FLOWER_PORT: int = 5555
-    FLOWER_HOST: str = "0.0.0.0"
-    FLOWER_BASIC_AUTH: Optional[str] = "admin:admin"  # username:password
-    FLOWER_URL_PREFIX: str = "/flower"  # Optional: if behind proxy
-
     #Email / SMTP
     EMAIL_HOST: str = "smtp.gmail.com"
     EMAIL_PORT: int = 465
     EMAIL_USER: str = ""
     EMAIL_PASS: str = ""
 
+    #google oauth
+    google_client_id: str
+    google_client_secret: str
+    google_redirect_uri: str = "http://localhost:8000/auth/google/callback"
+    
+    # GitHub OAuth
+    github_client_id: str
+    github_client_secret: str
+    github_redirect_uri: str = "http://localhost:8000/auth/github/callback"
+
+    SESSION_SECRET_KEY: str
     class Config:
         env_file = ".env"
         # extra = "ignore"   # don't crash on unknown .env keys

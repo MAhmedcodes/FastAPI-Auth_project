@@ -30,3 +30,4 @@ class VotedResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        

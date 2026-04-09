@@ -1,18 +1,23 @@
 from fastapi import FastAPI, Request, Response
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+from starlette.middleware.sessions import SessionMiddleware  # Add this import
 
 from app import models
 from app.core.config.config import settings
 from .database.database import engine
-from .routers import users, posts, auth, votes, monitoring, dashboard, prometheus_webhook
+from .routers import users, posts, auth, votes, monitoring, dashboard, prometheus_webhook, oauth  # Add oauth here
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Counter, Histogram, Gauge
 import time
 
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine) no need beacuae of alembic
 
 app = FastAPI(
     title="Blog App with Celery Monitoring",
     description="FastAPI Blog App with Background Jobs & Flower Dashboard",
     version="1.0.0") 
+
+# Add SessionMiddleware - THIS IS IMPORTANT FOR OAUTH
+app.add_middleware(SessionMiddleware, secret_key= settings.SESSION_SECRET_KEY)
 
 app.include_router(users.router)
 app.include_router(posts.router)
@@ -21,6 +26,7 @@ app.include_router(votes.router)
 app.include_router(monitoring.router)
 app.include_router(dashboard.router)
 app.include_router(prometheus_webhook.router)
+app.include_router(oauth.router)  # Add this line
 
 @app.get("/home")
 async def root():
