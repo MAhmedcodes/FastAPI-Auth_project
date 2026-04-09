@@ -7,7 +7,7 @@ from .routers import users, posts, auth, votes, monitoring, dashboard, prometheu
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Counter, Histogram, Gauge
 import time
 
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine) no need beacuae of alembic
 
 app = FastAPI(
     title="Blog App with Celery Monitoring",
