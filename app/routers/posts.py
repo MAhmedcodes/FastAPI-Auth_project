@@ -46,7 +46,6 @@ def get_filtered_post(db: Session = Depends(get_db), get_current_user: schemas.C
     return posts
 
 # get single user all posts
-
 @router.get("/all", response_model=List[schemas.VotedResponse])
 def get_all_by_single_user(db: Session = Depends(get_db), get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
     # posts = db.query(models.Post).filter(models.Post.user_id == get_current_user.id).all()
@@ -57,6 +56,63 @@ def get_all_by_single_user(db: Session = Depends(get_db), get_current_user: sche
                     models.Post.user_id == get_current_user.id
                          ).group_by(models.Post.id).all()
     return posts
+
+#Create
+@router.post("/", status_code= status.HTTP_201_CREATED, response_model=schemas.Response)
+def create_post(post : schemas.CreatePost, db: Session = Depends(get_db), get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
+    print(get_current_user)
+    new_post = models.Post(user_id = get_current_user.id, **post.model_dump())
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    print ( Fore.BLUE + "Post Created")
+    return new_post
+
+@router.get("/top", response_model=List[schemas.RankedPost])
+def top_posts(db: Session = Depends(get_db), limit:int = 10):
+
+    posts = db.query( models.Post, func.count(
+            models.Votes.post_id).label("votes"),
+            func.rank().over(order_by=func.count(
+                models.Votes.post_id).desc()).label("rank")).join(
+                    models.Votes, models.Votes.post_id == models.Post.id,
+                    isouter=True).group_by( 
+                        models.Post.id).order_by(func.count(models.Votes.post_id).desc()
+                                                 ).limit(limit).all()
+
+    return posts
+
+#delete
+@router.delete("/{id}")
+def delete_post(id :int,db: Session = Depends(get_db), get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
+    deleted_query = db.query(models.Post).filter(models.Post.id == id)
+    deleted_post = deleted_query.first()
+    if deleted_post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Post with id = {id} not found"
+                            )
+    if (deleted_post.user_id != get_current_user.id):  # type: ignore
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Forbidden! You are not the owner of post")
+    deleted_query.delete(synchronize_session=False)
+    db.commit()
+    return {"message": "Post is deleted"}
+
+#update
+@router.put("/{id}", response_model=schemas.Response)
+def update_post(id : int, post : schemas.CreatePost, db: Session = Depends(get_db), get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
+    update_query = db.query(models.Post).filter(models.Post.id == id)
+    updated_post = update_query.first()
+    if updated_post == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post with id = {id} not found")
+    if (updated_post.user_id != get_current_user.id):  # type: ignore
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Forbidden! You are not the owner of post")
+    update_query.update(post.model_dump(), synchronize_session=False) # type: ignore
+    db.commit()
+    db.refresh(updated_post)
+    return updated_post
 
 #read single
 @router.get("/{id}", response_model=schemas.VotedResponse)
@@ -95,47 +151,3 @@ def get_single_post(
         )
 
     return single    
-
-
-#Create
-@router.post("/", status_code= status.HTTP_201_CREATED, response_model=schemas.Response)
-def create_post(post : schemas.CreatePost, db: Session = Depends(get_db), get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
-    print(get_current_user)
-    new_post = models.Post(user_id = get_current_user.id, **post.model_dump())
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-    print ( Fore.BLUE + "Post Created")
-    return new_post
-
-#delete
-@router.delete("/{id}")
-def delete_post(id :int,db: Session = Depends(get_db), get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
-    deleted_query = db.query(models.Post).filter(models.Post.id == id)
-    deleted_post = deleted_query.first()
-    if deleted_post is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Post with id = {id} not found"
-                            )
-    if (deleted_post.user_id != get_current_user.id):  # type: ignore
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Forbidden! You are not the owner of post")
-    deleted_query.delete(synchronize_session=False)
-    db.commit()
-    return {"message": "Post is deleted"}
-
-#update
-@router.put("/{id}", response_model=schemas.Response)
-def update_post(id : int, post : schemas.CreatePost, db: Session = Depends(get_db), get_current_user: schemas.CurrentUser = Depends(oauth2.current_user)):
-    update_query = db.query(models.Post).filter(models.Post.id == id)
-    updated_post = update_query.first()
-    if updated_post == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"post with id = {id} not found")
-    if (updated_post.user_id != get_current_user.id):  # type: ignore
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Forbidden! You are not the owner of post")
-    update_query.update(post.model_dump(), synchronize_session=False) # type: ignore
-    db.commit()
-    db.refresh(updated_post)
-    return updated_post

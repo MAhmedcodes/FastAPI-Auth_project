@@ -30,4 +30,13 @@ class VotedResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class RankedPost(BaseModel):
+
+    Post: Response
+    votes: int
+    rank: int
+
+    class Config:
+        from_attributes = True
         

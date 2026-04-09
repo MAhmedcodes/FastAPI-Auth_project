@@ -22,16 +22,17 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: str = "6379"
 
-    FLOWER_PORT: int = 5555
-    FLOWER_HOST: str = "0.0.0.0"
-    FLOWER_BASIC_AUTH: Optional[str] = "admin:admin"  # username:password
-    FLOWER_URL_PREFIX: str = "/flower"  # Optional: if behind proxy
-
     #Email / SMTP
     EMAIL_HOST: str = "smtp.gmail.com"
     EMAIL_PORT: int = 465
     EMAIL_USER: str = ""
     EMAIL_PASS: str = ""
+
+    # Add these missing fields
+    flower_port: str = "5555"
+    flower_host: str = "0.0.0.0"
+    flower_basic_auth: str = "admin:admin"
+    flower_url_prefix: str = "/flower"
 
     #google oauth
     google_client_id: str
