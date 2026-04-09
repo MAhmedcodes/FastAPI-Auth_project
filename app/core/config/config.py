@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     EMAIL_USER: str = ""
     EMAIL_PASS: str = ""
 
+    # Add these missing fields
+    flower_port: str = "5555"
+    flower_host: str = "0.0.0.0"
+    flower_basic_auth: str = "admin:admin"
+    flower_url_prefix: str = "/flower"
+
     #google oauth
     google_client_id: str
     google_client_secret: str
