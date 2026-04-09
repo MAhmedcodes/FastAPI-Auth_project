@@ -284,4 +284,3 @@ async def redirect_to_flower():
     """Redirect to Flower dashboard"""
     flower_url = f"http://{settings.FLOWER_HOST}:{settings.FLOWER_PORT}"
     return RedirectResponse(url=flower_url)
-

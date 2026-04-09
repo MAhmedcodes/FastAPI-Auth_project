@@ -60,8 +60,3 @@ def send_congrats_to_top_posters(self):
     except Exception as exc:
         logger.error(f"❌ Task failed: {exc}", exc_info=True)
         raise self.retry(exc=exc)
-
-
-#commands to run on differnet terminal
-# celery -A app.tasks.celery_app.celery_app beat --loglevel=info
-# celery -A app.tasks.celery_app.celery_app worker --loglevel=info --pool=solo

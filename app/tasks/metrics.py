@@ -17,3 +17,4 @@ def task_postrun_handler(sender=None, task_id=None, task=None, state=None, **kw)
     CELERY_TASKS_ACTIVE.dec()
     if task:
         CELERY_TASKS_TOTAL.labels(task_name=task.name, status=state).inc()
+        

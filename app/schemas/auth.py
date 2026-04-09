@@ -8,3 +8,12 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[int] = None
+
+class OAuthResponse(Token):
+    user_id: int
+    email: str
+    message: str
+
+    class config:
+        from_attributes = True
+        
